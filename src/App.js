@@ -98,10 +98,7 @@ const App = () => {
   const [selectionType, setSelectionType] = useState("checkbox");
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        {selectedRows}
-      );
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, { selectedRows });
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === "Disabled User",
@@ -164,28 +161,6 @@ const App = () => {
         ) : null,
     },
   ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      numero_prontuario: filteredServidor[0].numero_prontuario,
-      nome: filteredServidor[0].nome,
-      data_nascimento: filteredServidor[0].data_nascimento,
-      procedimento: filteredServidor[0].procedimento,
-      images: filteredServidor[0].images
-    };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-  };
-  const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-    setDataSource(newData);
-  };
   const components = {
     body: {
       row: EditableRow,
@@ -203,7 +178,6 @@ const App = () => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave,
       }),
     };
   });
@@ -233,12 +207,6 @@ const App = () => {
               onChange={(e) => setSearch(e.target.value)}
               suffix={<SearchOutlined />}
             />
-            <Button
-              onClick={handleAdd}
-              type="primary"
-              icon={<UserAddOutlined />}
-              size="large"
-            />
           </div>
         </div>
         <div>
@@ -250,12 +218,12 @@ const App = () => {
             }}
             rowClassName={() => "editable-row"}
             bordered
-            dataSource={dataSource}
+            dataSource={filteredServidor.length === 1 ? filteredServidor : null}
             columns={columns}
           />
         </div>
         <Divider />
-        {dataSource.length !== 0 ? (
+        {filteredServidor.length !== 0 ? (
           <Image.PreviewGroup>
             <Checkbox.Group
               style={{
@@ -265,15 +233,19 @@ const App = () => {
             >
               <Row>
                 <Col span={8}>
-                  {dataSource?.map((res) =>
-                    res.images.map((res) => <Checkbox value={res} />)
-                  )}
+                  {filteredServidor.length === 1
+                    ? filteredServidor?.map((res) =>
+                        res.images.map((res) => <Checkbox value={res} />)
+                      )
+                    : null}
                 </Col>
               </Row>
             </Checkbox.Group>
-            {dataSource?.map((res) =>
-              res.images.map((res) => <Image width={200} src={res.image} />)
-            )}
+            {filteredServidor.length === 1
+              ? filteredServidor?.map((res) =>
+                  res.images.map((res) => <Image width={200} src={res.image} />)
+                )
+              : null}
           </Image.PreviewGroup>
         ) : null}
       </form>
